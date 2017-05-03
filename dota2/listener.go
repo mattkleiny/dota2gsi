@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-package listener
+package dota2
 
 import (
 	"encoding/json"
@@ -31,34 +31,24 @@ import (
 )
 
 // Starts a HTTP server listening on the given port for game status updates
-// Calls the given callback with the provided game state synchronously
-// TODO: make this async/use go routines instead
-func StartListener(port int, callback func(state *GameState)) {
+// Calls the given callback with the current game state, synchronously
+// TODO: use go routines and a channel instead
+func StartListener(port int, callback func(state *GameState)) error {
 	// create a handler for processing incoming requests and forwarding it to our callback
 	handler := func(writer http.ResponseWriter, request *http.Request) {
-		if request.Body == nil {
-			return // invalid request
-		}
-
-		// decode the state packet
+		// decode the state packet and forward it to the callback
 		state := new(GameState)
 		decoder := json.NewDecoder(request.Body)
 		err := decoder.Decode(state)
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
 		}
-
 		callback(state)
 	}
 
-	// simple mux; don't like using global state on the http package
+	// start the http server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
-
-	// start the http server
 	addr := ":" + strconv.Itoa(port)
-	err := http.ListenAndServe(addr, mux)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return http.ListenAndServe(addr, mux)
 }

@@ -24,15 +24,35 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 
-	"github.com/xeusalmighty/dota2gsi/listener"
+	"github.com/xeusalmighty/dota2gsi/dota2"
+)
+
+// Command line flags
+var (
+	portFlag = flag.Int("port", 4000, "The port to listen on for game state information")
 )
 
 // Entry point for the application
 func main() {
-	callback := func(state *listener.GameState) {
-		fmt.Println(state)
+	parseFlags()
+
+	callback := func(state *dota2.GameState) {
+		fmt.Println(state) // just print to stdout
 	}
-	listener.StartListener(4000, callback)
+
+	dota2.StartListener(*portFlag, callback)
+}
+
+// Parses command line flags/arguments
+func parseFlags() {
+	flag.Parse()
+
+	if *portFlag == 0 {
+		flag.Usage()
+		log.Fatal("A valid port was expecte")
+	}
 }

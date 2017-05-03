@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-package listener
+package dota2
 
 // State information packet from the DOTA 2 GSI system
 type GameState struct {
