@@ -121,17 +121,7 @@ func ListenForUpdates(port int) chan *GameState {
 	// starts the http server
 	start := func() {
 		mux := http.NewServeMux()
-		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			state := new(GameState)
-
-			decoder := json.NewDecoder(r.Body)
-			err := decoder.Decode(state)
-			if err != nil {
-				log.Print(err)
-			}
-
-			updates <- state
-		})
+		mux.HandleFunc("/", GameStateHandler(updates))
 
 		addr := ":" + strconv.Itoa(port)
 		log.Print("Starting game state listener on port ", addr)
@@ -145,4 +135,19 @@ func ListenForUpdates(port int) chan *GameState {
 	go start()
 
 	return updates
+}
+
+// Creates a new GSI state handler HTTP func that writes to the given channel
+func GameStateHandler(updates chan *GameState) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		state := new(GameState)
+
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(state)
+		if err != nil {
+			log.Print(err)
+		}
+
+		updates <- state
+	}
 }
