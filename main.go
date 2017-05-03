@@ -48,15 +48,15 @@ func main() {
 	signal.Notify(signals, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	// listen for game state updates
-	states := dota2.ListenForUpdates(*portFlag)
+	updates := dota2.ListenForUpdates(*portFlag)
 
 	// run forever
 	running := true
 	for running {
 		select {
-		case state := <-states:
+		case update := <-updates:
 			// handle game state updates
-			fmt.Println(state)
+			fmt.Println(update)
 
 		case <-signals:
 			// handle system signals
