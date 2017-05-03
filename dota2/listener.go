@@ -30,25 +30,39 @@ import (
 	"strconv"
 )
 
-// Starts a HTTP server listening on the given port for game status updates
-// Calls the given callback with the current game state, synchronously
-// TODO: use go routines and a channel instead
-func StartListener(port int, callback func(state *GameState)) error {
-	// create a handler for processing incoming requests and forwarding it to our callback
+// Starts a HTTP server listening on the given port for game status updates,
+// returns a channel that is provided with states as the updates occur
+func ListenForUpdates(port int) chan *GameState {
+	channel := make(chan *GameState) // the resultant channel
+
+	// handles requests to the http server
 	handler := func(writer http.ResponseWriter, request *http.Request) {
-		// decode the state packet and forward it to the callback
 		state := new(GameState)
+
 		decoder := json.NewDecoder(request.Body)
 		err := decoder.Decode(state)
 		if err != nil {
 			log.Print(err)
 		}
-		callback(state)
+
+		channel <- state
 	}
 
-	// start the http server
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler)
-	addr := ":" + strconv.Itoa(port)
-	return http.ListenAndServe(addr, mux)
+	// starts the http server
+	start := func() {
+		addr := ":" + strconv.Itoa(port)
+		log.Print("Starting game state listener on port ", addr)
+
+		mux := http.NewServeMux()
+		mux.HandleFunc("/", handler)
+
+		err := http.ListenAndServe(addr, mux)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	go start()
+
+	return channel
 }

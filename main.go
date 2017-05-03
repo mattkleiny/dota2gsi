@@ -27,6 +27,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/xeusalmighty/dota2gsi/dota2"
 )
@@ -40,11 +43,26 @@ var (
 func main() {
 	parseFlags()
 
-	callback := func(state *dota2.GameState) {
-		fmt.Println(state) // just print to stdout
-	}
+	// listen for system signals
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
-	dota2.StartListener(*portFlag, callback)
+	// listen for game state updates
+	states := dota2.ListenForUpdates(*portFlag)
+
+	// run forever
+	running := true
+	for running {
+		select {
+		case state := <-states:
+			// handle game state updates
+			fmt.Println(state)
+
+		case <-signals:
+			// handle system signals
+			running = false
+		}
+	}
 }
 
 // Parses command line flags/arguments
