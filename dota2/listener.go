@@ -27,7 +27,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 // State information packet from the DOTA 2 GSI system
@@ -113,20 +112,17 @@ type Hero struct {
 	HasDebuff     bool `json:"has_debuff"`
 }
 
-// Starts a HTTP server listening on the given port for game status updates,
-// returns a channel that is provided with states as the updates occur
-func ListenForUpdates(port int) chan *GameState {
+// Starts an HTTP server listening on the given address for game state updates.
+// Returns a channel that is provided with states as the updates occur.
+func ListenForUpdates(address string) chan *GameState {
 	updates := make(chan *GameState)
 
-	// starts the http server
 	start := func() {
 		mux := http.NewServeMux()
 		mux.HandleFunc("/", GameStateHandler(updates))
 
-		addr := ":" + strconv.Itoa(port)
-		log.Print("Starting game state listener on port ", addr)
-
-		err := http.ListenAndServe(addr, mux)
+		log.Print("Starting game state listener on ", address)
+		err := http.ListenAndServe(address, mux)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -137,7 +133,7 @@ func ListenForUpdates(port int) chan *GameState {
 	return updates
 }
 
-// Creates a new GSI state handler HTTP func that writes to the given channel
+// Creates a new GSI state handler HTTP func that writes to the given channel.
 func GameStateHandler(updates chan *GameState) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		state := new(GameState)

@@ -29,43 +29,35 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/xeusalmighty/dota2gsi/dota2"
 )
 
-// Command line flags
-var (
-	portFlag = flag.Int("port", 4000, "The port to listen on for game state information")
-)
+var portFlag = flag.Int("port", 4000, "The port to listen on for game state information")
 
-// Entry point for the application
 func main() {
 	parseFlags()
 
-	// listen for system signals
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
-	// listen for game state updates
-	updates := dota2.ListenForUpdates(*portFlag)
+	address := "localhost:" + strconv.Itoa(*portFlag)
+	updates := dota2.ListenForUpdates(address)
 
-	// run forever
 	running := true
 	for running {
 		select {
 		case update := <-updates:
-			// handle game state updates
 			fmt.Println(update)
 
 		case <-signals:
-			// handle system signals
 			running = false
 		}
 	}
 }
 
-// Parses command line flags/arguments
 func parseFlags() {
 	flag.Parse()
 
