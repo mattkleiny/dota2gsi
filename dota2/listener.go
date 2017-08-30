@@ -1,25 +1,6 @@
-// Copyright © 2017 Matthew Kleinschafer
-// 
-// Permission is hereby granted, free of charge, to any person
-// obtaining a copy of this software and associated documentation
-// files (the “Software”), to deal in the Software without
-// restriction, including without limitation the rights to use,
-// copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the
-// Software is furnished to do so, subject to the following
-// conditions:
-// 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-// OTHER DEALINGS IN THE SOFTWARE.
+// Copyright 2017, the project authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE.md file.
 
 package dota2
 
@@ -31,9 +12,9 @@ import (
 
 // State information packet from the DOTA 2 GSI system
 type GameState struct {
-	Player     Player `json:"player"`
-	Hero       Hero `json:"hero"`
-	Map        Map `json:"map"`
+	Player     Player     `json:"player"`
+	Hero       Hero       `json:"hero"`
+	Map        Map        `json:"map"`
 	Previously *GameState `json:"previously"`
 }
 
@@ -41,12 +22,12 @@ type GameState struct {
 type Map struct {
 	// general information
 	Name    string `json:"name"`
-	MatchId int `json:"match_id"`
+	MatchId int    `json:"match_id"`
 
 	// time information
-	GameTime             int `json:"game_time"`
-	ClockTime            int `json:"clock_time"`
-	WardPurchaseCooldown int `json:"ward_purchase_cooldown"`
+	GameTime             int  `json:"game_time"`
+	ClockTime            int  `json:"clock_time"`
+	WardPurchaseCooldown int  `json:"ward_purchase_cooldown"`
 	IsDaytime            bool `json:"daytime"`
 	IsNightstalkerNight  bool `json:"nightstalker_night"`
 }
@@ -54,7 +35,7 @@ type Map struct {
 // Status information for a particular player in the game
 type Player struct {
 	// general player info
-	SteamId  int `json:"steam_id"`
+	SteamId  int    `json:"steam_id"`
 	Name     string `json:"name"`
 	TeamName string `json:"team_name"`
 	Activity string `json:"activity"`
@@ -82,11 +63,11 @@ type Player struct {
 // Status information for a particular hero in te game
 type Hero struct {
 	// general hero info
-	Id               int `json:"id"`
+	Id               int    `json:"id"`
 	Name             string `json:"name"`
-	Level            int `json:"level"`
-	IsAlive          bool `json:"alive"`
-	SecondsToRespawn int `json:"respawn_seconds"`
+	Level            int    `json:"level"`
+	IsAlive          bool   `json:"alive"`
+	SecondsToRespawn int    `json:"respawn_seconds"`
 
 	// buyback information
 	BuybackCost     int `json:"buyback_cost"`
