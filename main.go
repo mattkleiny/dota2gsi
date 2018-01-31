@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bitbucket.org/mattklein/dota2gsi/dota2"
 	"flag"
 	"fmt"
 	"log"
@@ -12,8 +13,6 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
-
-	"github.com/xeusalmighty/dota2gsi/dota2"
 )
 
 var portFlag = flag.Int("port", 4000, "The port to listen on for game state information")
